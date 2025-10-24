@@ -248,7 +248,7 @@ Another helper function, `everything()`, matches all variables that have not yet
 
 ```{r, render = reactable_5_rows}
 # First, `is_pregnant`, then every other column.
-yao %>% select(____________________)
+yao %>% select(is_pregnant, everything())
 ```
 
 It is often useful for establishing the order of columns.
@@ -276,7 +276,7 @@ yaounde %>% select(is_pregnant, everything())
 This helper can be combined with many others.
 
 ```{r, render = reactable_5_rows}
-# Bring columns that start with "result" to the front of the data frame
+# Bring columns that end with "result" to the front of the data frame
 yaounde %>% select(ends_with("result"), everything())
 ```
 
@@ -285,7 +285,7 @@ yaounde %>% select(ends_with("result"), everything())
 -   Select all columns in the `yaounde` data frame that start with "is".
 
 ```{r, eval = F, echo = FALSE}
-Q_starts_with_is <-  yaounde %>%  ____________
+Q_starts_with_is <-  yaounde %>% select(starts_with("is"))
 Q_starts_with_is
 ```
 
@@ -299,7 +299,7 @@ Q_starts_with_is
 -   Move the columns that start with "is" to the beginning of the `yaounde` data frame.
 
 ```{r, eval = F, echo = FALSE}
-Q_rearrange <-  yaounde %>%  ____________
+Q_rearrange <-  yaounde %>% select(starts_with("is"), everything())
 Q_rearrange
 ```
 
@@ -319,9 +319,9 @@ Q_rearrange
 ```{r, render = reactable_5_rows}
 # Rename `age` and `sex` to `patient_age` and `patient_sex`
 yaounde %>% 
-  rename(___________________,
-         ___________________)
-```
+  rename(patient_age = age,
+         patient_sex = sex)
+`````````
 
 ::: watch-out
 The fact that the new name comes first in the function (`rename(NEWNAME = OLDNAME)`) is sometimes confusing. You should get used to this with time.
