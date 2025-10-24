@@ -7,6 +7,8 @@ output:
     toc_float: true
     css: !expr here::here("global/style/style.css")
     highlight: kate
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, eval = F, include = F}
@@ -18,7 +20,6 @@ We encourage you to do this; typing code with the teacher is the best way to lea
 
 If you are not sure how to use our code-along documents, please watch this video: https://vimeo.com/767363677
 ```
-
 
 ```{r, echo = F, message = F, warning = F}
 # SETUP CHUNK. Remember to run this whole chunk before continuing with the lesson.
@@ -78,7 +79,7 @@ Let's take a look at a simple example.
 If we want to keep just the male records, we run:
 
 ```{r}
-yao ____________________ # Filter for sex equal to "Male"
+yao %>% filter(sex == "Male") # Filter for sex equal to "Male"
 ```
 
 Note the use of the double equal sign `==` rather than the single equal sign `=`.
@@ -88,8 +89,8 @@ We can chain `filter()` with `nrow()` to get the number of rows fulfilling a con
 ```{r, render = normal_print}
 ## how many respondents were male?
 yao %>% 
-  _______________________ %>% 
-  _________________
+  filter(sex == "Male") %>% 
+  nrow()
 ```
 
 ::: key-point
@@ -108,12 +109,10 @@ Q_is_pregnant<- yao %>% filter(is_pregnant == "Yes")
 Q_is_pregnant
 ```
 
-
 ```{r, eval = F, echo = FALSE}
 .CHECK_Q_is_pregnant()
 .HINT_Q_is_pregnant()
 ```
-
 
 ```{r, eval = F, echo = FALSE}
 # Now, to obtain the solution, run the line below!
@@ -127,10 +126,9 @@ Q_is_pregnant
 How many respondents were female? (Use `filter()` and `nrow()`)
 
 ```{r, eval = F, echo = FALSE}
-Q_female_nrow <- yao ______________________
+Q_female_nrow <- yao %>% filter(sex == "Female") %>% nrow()
 Q_female_nrow
 ```
-
 
 ```{r, eval = F, echo = FALSE}
 .CHECK_Q_female_nrow()
@@ -164,21 +162,20 @@ You can also save the resource to come back to it when you code.
 Let's see how to use these within `filter()`:
 
 ```{r}
-yao %>% filter(____________) ## keep rows where `sex` is not "Male"
-yao %>% filter(____________) ## keep respondents under 6
-yao %>% filter(____________) ## keep respondents aged at least 70
+yao %>% filter(sex != "Male") ## keep rows where `sex` is not "Male"
+yao %>% filter(age < 6) ## keep respondents under 6
+yao %>% filter(age >= 70) ## keep respondents aged at least 70
 
 ## keep respondents whose highest education is "Primary" or "Secondary"
-yao %>% filter(___________________________________)
+yao %>% filter(highest_education %in% c("Primary", "Secondary"))
 ```
 
 ::: practice
 From `yao`, keep only respondents who were children (under 18).
 
 ```{r, eval = F, echo = FALSE}
-Q_under_18 <- yao _______________________
+Q_under_18 <- yao %>% filter(age < 18)
 ```
-
 
 ```{r, eval = F, echo = FALSE}
 # Check your answer:
@@ -189,10 +186,9 @@ Q_under_18 <- yao _______________________
 With `%in%`, keep only respondents who live in the "Tsinga" or "Messa" neighborhoods.
 
 ```{r, eval = F, echo = FALSE}
-Q_tsinga_messa <- yao _______________________
+Q_tsinga_messa <- yao %>% filter(neighborhood %in% c("Tsinga", "Messa"))
 Q_tsinga_messa
 ```
-
 
 ```{r, eval = F, echo = FALSE}
 # Check your answer:
@@ -209,7 +205,7 @@ The conditions are separated by commas:
 
 ```{r}
 ## keep respondents who are pregnant and are ex-smokers
-yao %>% filter(_____________________________________) ## only one row
+yao %>% filter(is_pregnant == "Yes", is_smoker == "Ex-smoker") ## only one row
 ```
 
 When multiple conditions are separated by a comma, they are implicitly combined with an **and** (`&`).
@@ -218,7 +214,7 @@ Good practice is to replace the comma with `&` to make this more explicit.
 
 ```{r}
 ## same result as before, but `&` is more explicit
-yao %>% filter(_____________________________________)
+yao %>% filter(is_pregnant == "Yes" & is_smoker == "Ex-smoker")
 ```
 
 ::: side-note
@@ -233,18 +229,16 @@ If we want to combine conditions with an **or**, we use the vertical bar symbol,
 
 ```{r}
 ## respondents who are pregnant OR who are ex-smokers
-yao %>% filter(___________________________________________)
+yao %>% filter(is_pregnant == "Yes" | is_smoker == "Ex-smoker")
 ```
 
 ::: practice
-
 Filter `yao` to only keep men who tested IgG positive.
 
 ```{r, eval = F, echo = FALSE}
-Q_male_positive <- yao %>% ____________________
+Q_male_positive <- yao %>% filter(sex == "Male" & igg_result == "Positive")
 Q_male_positive
 ```
-
 
 ```{r, eval = F, echo = FALSE}
 # Check your answer:
@@ -255,10 +249,9 @@ Q_male_positive
 Filter `yao` to keep both children (under 18) and anyone whose highest education is primary school.
 
 ```{r, eval = F, echo = FALSE}
-Q_child_primary <- yao %>% ____________________
+Q_child_primary <- yao %>% filter(age < 18 | highest_education == "Primary")
 Q_child_primary
 ```
-
 
 ```{r, eval = F, echo = FALSE}
 # Check your answer:
@@ -281,7 +274,7 @@ OR
 
 ```{r}
 ## drop respondents < 18 years OR < 30 kg
-yao %>% filter(_________________________)
+yao %>% filter(!(age < 18 | weight_kg < 30))
 ```
 
 If you combine `!` with `%in%` then it is like writing the operator **NOT in**:
@@ -316,10 +309,9 @@ yao %>% filter(!(age < 18 | weight_kg < 30))
 From `yao`, drop respondents who live in the Tsinga or Messa neighborhoods.
 
 ```{r, eval = F, echo = FALSE}
-Q_not_tsinga_messa <- yao ____________
+Q_not_tsinga_messa <- yao %>% filter(!(neighborhood %in% c("Tsinga", "Messa")))
 Q_not_tsinga_messa
 ```
-
 
 ```{r, eval = F, echo = FALSE}
 # Check your answer:
@@ -351,7 +343,7 @@ yao_mini %>% filter(is_pregnant == NA) ## does not work
 yao_mini %>% filter(is_pregnant == "NA") ## does not work
 ```
 
-`NA` is a non-existent value.
+**`NA` is a non-existent value.**
 
 So R cannot evaluate whether it is "equal to" or "not equal to" anything.
 
@@ -359,14 +351,14 @@ The special function `is.na()` is therefore necessary:
 
 ```{r}
 ## keep rows where `is_pregnant` is NA
-yao_mini %>% filter(____________________) 
+yao_mini %>% filter(is.na(is_pregnant)) 
 ```
 
 This function can be negated with `!`:
 
 ```{r}
 ## drop rows where `is_pregnant` is NA
-yao_mini %>% filter(____________________)
+yao_mini %>% filter(!(is.na(is_pregnant)))
 ```
 
 This is super useful to remove any `NA` values from your variables. More on this in the future.
@@ -385,10 +377,9 @@ For tibbles, RStudio will highlight `NA` values bright red to distinguish them f
 From the `yao` dataset, keep all the respondents who had missing records for the report of their smoking status.
 
 ```{r, eval = F, echo = FALSE}
-Q_na_smoker <- yao %>% _____________________
+Q_na_smoker <- yao %>% filter(is.na(is_smoker))
 Q_na_smoker
 ```
-
 
 ```{r, eval = F, echo = FALSE}
 # Check your answer:
@@ -396,7 +387,6 @@ Q_na_smoker
 .HINT_Q_na_smoker()
 ```
 :::
-
 
 ## Contributors {.unlisted .unnumbered}
 
